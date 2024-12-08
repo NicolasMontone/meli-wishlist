@@ -3,15 +3,13 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
-import { useToast } from '../hooks/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 
 import { WishlistItem } from './wishlist-item'
-import { isMeliUrl } from '@/utils/isMeliUrl'
 import { useWishlist } from '@/hooks/use-wishlist'
-import { ShareWishlist } from './share-wishlist'
+import { Label } from './ui/label'
 
 interface CreateWishlistProps {
   sessionId: string
@@ -20,66 +18,24 @@ interface CreateWishlistProps {
 
 export function CreateWishlist({ sessionId }: CreateWishlistProps) {
   const { wishlist, isLoading, addUrl, deleteUrl } = useWishlist(sessionId)
-
+  const [isAdding, setIsAdding] = useState(false)
   const [newUrl, setNewUrl] = useState('')
   const { toast } = useToast()
 
-  const saveWishlist = async (newWishlist: typeof wishlist) => {
-    try {
-      await fetch('/api/wishlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sessionId,
-          urls: newWishlist.map((item) => item.url),
-        }),
-      })
-    } catch (error) {
-      console.error('Error saving wishlist:', error)
-    }
-  }
-
   const handleAddUrl = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsAdding(true)
     await addUrl(newUrl)
     setNewUrl('')
+    setIsAdding(false)
     toast({
       title: 'Artículo añadido',
       description: 'El artículo ha sido añadido a tu lista de deseos.',
     })
   }
 
-  const removeUrl = async (url: string) => {
-    await deleteUrl(url)
-
-    toast({
-      title: 'Artículo eliminado',
-      description: 'El artículo ha sido eliminado de tu lista de deseos.',
-    })
-  }
-
-  if (isLoading && wishlist.length === 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Cargando lista de deseos...</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-24 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    )
-  }
+  const isFirstLoading = isLoading && wishlist.length === 0 && !isAdding
+  const isEmpty = wishlist.length === 0 && !isFirstLoading
 
   return (
     <motion.div
@@ -87,25 +43,25 @@ export function CreateWishlist({ sessionId }: CreateWishlistProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card>
-        <CardHeader>
-          <CardTitle>Añadir Artículo</CardTitle>
-        </CardHeader>
-        <form onSubmit={handleAddUrl}>
-          <CardContent>
+      <form onSubmit={handleAddUrl}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="url" className="text-md text-muted-foreground">
+            URL del artículo
+          </Label>
+          <div className="flex gap-2">
             <Input
+              id="url"
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
               placeholder="https://articulo.mercadolibre....."
             />
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || isAdding}>
               {isLoading ? 'Cargando...' : 'Añadir'}
             </Button>
-          </CardFooter>
-        </form>
-      </Card>
+          </div>
+        </div>
+      </form>
+
       {wishlist.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
           {wishlist.map((item) => (
@@ -113,7 +69,16 @@ export function CreateWishlist({ sessionId }: CreateWishlistProps) {
           ))}
         </div>
       )}
-      <ShareWishlist />
+      {isEmpty && (
+        <p className="text-muted-foreground mt-4">
+          No hay artículos en tu lista de deseos
+        </p>
+      )}
+      {isFirstLoading &&
+        Array.from({ length: 10 }).map((_, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Falsooo
+          <div key={index} className="h-24 w-full bg-gray-100 animate-pulse" />
+        ))}
     </motion.div>
   )
 }

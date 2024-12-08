@@ -8,16 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b bg-primary">
-        <div className="container mx-auto p-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold text-primary-foreground">
-            Mi Lista de Deseos
-          </h1>
-        </div>
-      </nav>
-      <main className="container mx-auto p-4 space-y-8">
-        <WishlistFlow />
-      </main>
+      <WishlistFlow />
     </div>
   )
 }
@@ -43,6 +34,13 @@ function WishlistFlow() {
 
   return (
     <AnimatePresence mode="wait">
+      <nav className="border-b bg-primary mb-8">
+        <div className="container mx-auto p-4 flex justify-between items-center">
+          <h1 className="text-xl font-semibold text-primary-foreground">
+            {session?.username ? `${session.username} - Lista de Deseos` : 'Lista de Deseos'}
+          </h1>
+        </div>
+      </nav>
       {!session ? (
         <motion.div
           key="username-form"
@@ -61,10 +59,12 @@ function WishlistFlow() {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
-          <CreateWishlist
-            sessionId={session.sessionId}
-            username={session.username}
-          />
+          <main className="container mx-auto p-4 space-y-8">
+            <CreateWishlist
+              sessionId={session.sessionId}
+              username={session.username}
+            />
+          </main>
         </motion.div>
       )}
     </AnimatePresence>
