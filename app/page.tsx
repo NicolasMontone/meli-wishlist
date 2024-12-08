@@ -37,7 +37,23 @@ function WishlistFlow() {
       <nav className="border-b bg-primary mb-8">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-semibold text-primary-foreground">
-            {session?.username ? `${session.username} - Lista de Deseos` : 'Lista de Deseos'}
+            {session?.username ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {`${session.username} - Lista de Deseos`}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                Lista de Deseos
+              </motion.div>
+            )}
           </h1>
         </div>
       </nav>
