@@ -31,7 +31,7 @@ export default async function WishlistPage({
   )
 
   return (
-    <div className="min-h-screen bg-white p-6 md:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-8">
       <nav className="mx-auto mb-8 flex max-w-7xl items-center justify-between">
         <h1 className="text-5xl font-bold text-gray-900">
           Wishlist de{' '}
@@ -61,35 +61,35 @@ export default async function WishlistPage({
       </nav>
 
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {wishlistsItems.map((wishlistItem) => (
+        <div className="grid auto-rows-[minmax(180px,auto)] gap-4 md:gap-6">
+          {wishlistsItems.map((wishlistItem, index) => (
             <a
               href={wishlistItem.url}
               key={wishlistItem.url}
               target="_blank"
               rel="noreferrer"
-              className="transform transition-transform hover:scale-105"
+              className={`transform transition-transform hover:scale-105 ${
+                index % 3 === 0 ? 'md:col-span-2' : ''
+              }`}
             >
-              <Card className="overflow-hidden rounded-lg border border-gray-200 shadow-sm hover:shadow-lg">
-                <CardContent className="p-0">
-                  <div className="aspect-square overflow-hidden bg-gray-50">
+              <Card className="h-full overflow-hidden rounded-lg border border-gray-200 shadow-sm hover:shadow-lg">
+                <CardContent className="flex h-full flex-col p-0">
+                  <div className="relative flex-1 overflow-hidden bg-gray-50">
                     <img
                       src={wishlistItem.data.imageSrc || ''}
                       alt={wishlistItem.data.title || ''}
-                      className="h-full w-full object-contain"
+                      className="absolute h-full w-full object-contain"
                     />
                   </div>
                   <div className="p-4">
-                    <h2 className="line-clamp-2 min-h-[3rem] text-lg font-semibold text-gray-800">
+                    <h2 className="line-clamp-2 text-lg font-semibold text-gray-800">
                       {wishlistItem.data.title}
                     </h2>
+                    <p className="mt-2 text-xl font-bold text-[#3483FA]">
+                      ${wishlistItem.data.price?.toLocaleString() || '-'}
+                    </p>
                   </div>
                 </CardContent>
-                <CardFooter className="border-t bg-gray-50 p-4">
-                  <p className="text-xl font-bold text-[#3483FA]">
-                    ${wishlistItem.data.price?.toLocaleString() || '-'}
-                  </p>
-                </CardFooter>
               </Card>
             </a>
           ))}

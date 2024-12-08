@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { Wishlist } from '../types'
+
 import { useToast } from '../hooks/use-toast'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
