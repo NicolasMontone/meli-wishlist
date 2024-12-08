@@ -2,20 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+body {
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #fff159; /* Amarillo Mercado Libre */
+    --foreground: #333333; /* Texto gris oscuro */
+    --primary: #3483fa; /* Azul Mercado Libre */
+    --primary-foreground: #ffffff;
+    --secondary: #ededed;
+    --secondary-foreground: #333333;
+    --muted: #f7f7f7;
+    --muted-foreground: #666666;
+    --accent: #3483fa;
+    --accent-foreground: #ffffff;
+    --destructive: #ff1744;
+    --destructive-foreground: #ffffff;
+    --border: #dddddd;
+    --input: #ffffff;
+    --ring: #3483fa;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #333333;
+    --foreground: #ffffff;
+    /* ...otros valores para el modo oscuro... */
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
