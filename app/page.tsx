@@ -4,6 +4,7 @@ import { UsernameForm } from '@/components/username-form'
 import { CreateWishlist } from '@/components/create-wishlist'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Button } from '@/components/ui/button'
 
 export default function Home() {
   return (
@@ -55,6 +56,8 @@ function WishlistFlow() {
               </motion.div>
             )}
           </h1>
+
+          {session && <Button>Compartir</Button>}
         </div>
       </nav>
       {!session ? (
