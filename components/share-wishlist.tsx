@@ -11,7 +11,6 @@ import { Button } from './ui/button'
 import { ShareIcon } from 'lucide-react'
 
 export function ShareWishlist() {
-  const { wishlist } = useWishlist()
   const { toast } = useToast()
   const [username, setUsername] = useState('')
   const [savedUsername, setSaved] = useState<string | null>(null)

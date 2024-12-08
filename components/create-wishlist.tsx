@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 
 import { useToast } from '../hooks/use-toast'
 import { Input } from './ui/input'
@@ -8,65 +9,50 @@ import { Button } from './ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 
 import { WishlistItem } from './wishlist-item'
-import { isMeliUrl } from '../utils/isMeliUrl'
-import { useWishlist } from '../hooks/use-wishlist'
+import { isMeliUrl } from '@/utils/isMeliUrl'
+import { useWishlist } from '@/hooks/use-wishlist'
 import { ShareWishlist } from './share-wishlist'
 
-export function CreateWishlist() {
-  const { wishlist, setWishlist } = useWishlist()
-  const [isLoading, setIsLoading] = useState(false)
+interface CreateWishlistProps {
+  sessionId: string
+  username: string
+}
+
+export function CreateWishlist({ sessionId }: CreateWishlistProps) {
+  const { wishlist, isLoading, addUrl, deleteUrl } = useWishlist(sessionId)
+
   const [newUrl, setNewUrl] = useState('')
   const { toast } = useToast()
 
-  const addUrl = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!isMeliUrl(newUrl)) {
-      toast({
-        title: 'URL inválida',
-        description: 'Por favor, introduce una URL válida de Mercado Libre.',
-        variant: 'destructive',
-      })
-      return
-    }
+  const saveWishlist = async (newWishlist: typeof wishlist) => {
     try {
-      setIsLoading(true)
-      const itemExists = wishlist.some((item) => item.url === newUrl)
-      if (itemExists) {
-        toast({
-          title: 'Artículo ya existe',
-          description: 'El artículo ya existe en tu lista de deseos.',
-          variant: 'destructive',
-        })
-        return
-      }
-      const response = await fetch(
-        `/api/meli?url=${encodeURIComponent(newUrl)}`
-      )
-      const data = await response.json()
-      const newWishlist = [...wishlist, { url: newUrl, data }]
-      setWishlist(newWishlist)
-      setNewUrl('')
-
-      toast({
-        title: 'Artículo añadido',
-        description: 'El artículo ha sido añadido a tu lista de deseos.',
+      await fetch('/api/wishlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId,
+          urls: newWishlist.map((item) => item.url),
+        }),
       })
     } catch (error) {
-      console.error('Error al obtener datos del artículo:', error)
-      toast({
-        title: 'Error',
-        description:
-          'No se pudo añadir el artículo. Por favor, inténtalo de nuevo.',
-        variant: 'destructive',
-      })
-    } finally {
-      setIsLoading(false)
+      console.error('Error saving wishlist:', error)
     }
   }
 
-  const removeUrl = (url: string) => {
-    const newWishlist = wishlist.filter((item) => item.url !== url)
-    setWishlist(newWishlist)
+  const handleAddUrl = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await addUrl(newUrl)
+    setNewUrl('')
+    toast({
+      title: 'Artículo añadido',
+      description: 'El artículo ha sido añadido a tu lista de deseos.',
+    })
+  }
+
+  const removeUrl = async (url: string) => {
+    await deleteUrl(url)
 
     toast({
       title: 'Artículo eliminado',
@@ -74,13 +60,38 @@ export function CreateWishlist() {
     })
   }
 
+  if (isLoading && wishlist.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Cargando lista de deseos...</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-24 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    )
+  }
+
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <Card>
         <CardHeader>
           <CardTitle>Añadir Artículo</CardTitle>
         </CardHeader>
-        <form onSubmit={addUrl}>
+        <form onSubmit={handleAddUrl}>
           <CardContent>
             <Input
               value={newUrl}
@@ -103,6 +114,6 @@ export function CreateWishlist() {
         </div>
       )}
       <ShareWishlist />
-    </div>
+    </motion.div>
   )
 }
