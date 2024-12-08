@@ -1,106 +1,112 @@
-"use client";
+'use client'
 
-import { QRCodeCanvas } from "qrcode.react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useWishlist } from "@/hooks/use-wishlist";
-import { useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "./ui/button";
-import { ShareIcon } from "lucide-react";
+import { QRCodeCanvas } from 'qrcode.react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useWishlist } from '@/hooks/use-wishlist'
+import { useEffect, useState } from 'react'
+import { useToast } from '@/hooks/use-toast'
+import { Button } from './ui/button'
+import { ShareIcon } from 'lucide-react'
 
 export function ShareWishlist() {
-  const { wishlist } = useWishlist();
-  const { toast } = useToast();
-  const [username, setUsername] = useState("");
-  const [savedUsername, setSaved] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [takenUsernames, setTakenUsernames] = useState<string[]>([]);
+  const { wishlist } = useWishlist()
+  const { toast } = useToast()
+  const [username, setUsername] = useState('')
+  const [savedUsername, setSaved] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [takenUsernames, setTakenUsernames] = useState<string[]>([])
 
   useEffect(() => {
     const fetchTakenUsernames = async () => {
-      const response = await fetch("/api/wishlist/taken-usernames");
-      const data = await response.json();
-      setTakenUsernames(data);
-    };
-    fetchTakenUsernames();
-  }, []);
+      const response = await fetch('/api/wishlist/taken-usernames')
+      const data = await response.json()
+      setTakenUsernames(data)
+    }
+    fetchTakenUsernames()
+  }, [])
 
   const handleSaveWishlist = async () => {
-    setLoading(true);
+    setLoading(true)
     if (takenUsernames.includes(username)) {
       toast({
         title: `"${username}" ya está en uso`,
-        description: "Intenta con otro nombre de usuario",
-        variant: "destructive",
-      });
-      setLoading(false);
-      return;
+        description: 'Intenta con otro nombre de usuario',
+        variant: 'destructive',
+      })
+      setLoading(false)
+      return
     }
 
     if (!username.trim()) {
       toast({
-        title: "Error",
-        description: "Por favor ingresa un nombre de usuario",
-        variant: "destructive",
-      });
-      setLoading(false);
-      return;
+        title: 'Error',
+        description: 'Por favor ingresa un nombre de usuario',
+        variant: 'destructive',
+      })
+      setLoading(false)
+      return
     }
 
     if (takenUsernames.includes(username)) {
       toast({
-        title: "Error",
-        description: "Este nombre de usuario ya está en uso",
-        variant: "destructive",
-      });
-      setLoading(false);
-      return;
+        title: 'Error',
+        description: 'Este nombre de usuario ya está en uso',
+        variant: 'destructive',
+      })
+      setLoading(false)
+      return
     }
 
     try {
-      const response = await fetch("/api/wishlist", {
-        method: "POST",
+      const response = await fetch('/api/wishlist', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           username,
           urls: wishlist.map((item) => item.url),
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to save wishlist");
+        throw new Error('Failed to save wishlist')
       }
 
-      const data = await response.json();
+      const data = await response.json()
       toast({
-        title: "Lista guardada",
+        title: 'Lista guardada',
         description: `Tu lista ha sido guardada con el usuario: ${username}`,
-      });
-      setSaved(username);
+      })
+      setSaved(username)
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Algo salió mal al guardar tu lista",
-        variant: "destructive",
-      });
+        title: 'Error',
+        description: 'Algo salió mal al guardar tu lista',
+        variant: 'destructive',
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   async function share() {
     if (navigator.share) {
       await navigator.share({
-        title: "Lista de Deseos",
-        text: "Lista de deseos compartida con vos",
+        title: 'Lista de Deseos',
+        text: 'Lista de deseos compartida con vos',
         url: `${window.location.origin}/${savedUsername}`,
-      });
+      })
     } else {
-      console.error("Web Share API not supported on this browser");
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/${savedUsername}`
+      )
+      toast({
+        title: 'URL copiada',
+        description: 'La URL de tu lista ha sido copiada al portapapeles',
+      })
     }
   }
 
@@ -125,7 +131,7 @@ export function ShareWishlist() {
           className="w-full"
           disabled={!username.trim()}
         >
-          {loading ? "Guardando..." : "Guardar Lista"}
+          {loading ? 'Guardando...' : 'Guardar Lista'}
         </Button>
         {savedUsername && (
           <>
@@ -154,5 +160,5 @@ export function ShareWishlist() {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
