@@ -14,15 +14,14 @@ export const size = {
 export const contentType = 'image/png'
 
 // Image generation
-export default async function Image({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
+export async function GET(req: Request) {
+  const url = new URL(req.url)
+
+  const name = url.searchParams.get('name')
+
   const wishlistsUrls = await sql<{
     data: string[]
-  }>`SELECT data FROM wishlists WHERE name = ${id}`
+  }>`SELECT data FROM wishlists WHERE name = ${name}`
 
   if (!wishlistsUrls.rows[0]) {
     return new ImageResponse(
@@ -39,7 +38,7 @@ export default async function Image({
             justifyContent: 'center',
           }}
         >
-          {id}
+          {name}
         </div>
       ),
       {
@@ -66,7 +65,7 @@ export default async function Image({
             justifyContent: 'center',
           }}
         >
-          {id}
+          {name}
         </div>
       ),
       {
@@ -148,7 +147,7 @@ export default async function Image({
             textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
           }}
         >
-          {id}
+          {name}
         </div>
       </div>
     ),
