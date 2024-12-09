@@ -19,7 +19,7 @@ interface CreateWishlistProps {
 }
 
 export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
-  const { wishlist, isLoading, addUrl } = useWishlist(sessionId)
+  const { wishlist, isLoading, addUrl, deleteUrl } = useWishlist(sessionId)
   const [isAdding, setIsAdding] = useState(false)
   const [newUrl, setNewUrl] = useState('')
   const { toast } = useToast()
@@ -69,7 +69,18 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
 
   const [firstItem, ...restItems] = wishlist
 
-  const items = [firstItem, { share: handleShare }, ...restItems]
+  const items = firstItem
+    ? [
+        { ...firstItem, onDelete: (url: string) => deleteUrl(url) },
+        { share: handleShare },
+        ...restItems.map((item) => ({
+          ...item,
+          onDelete: (url: string) => deleteUrl(url),
+        })),
+      ]
+    : []
+
+  console.log(items)
 
   return (
     <motion.div

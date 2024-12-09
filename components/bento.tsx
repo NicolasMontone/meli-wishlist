@@ -2,14 +2,20 @@
 
 import Link from 'next/link'
 import type { Wishlist } from '../types'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, TrashIcon } from 'lucide-react'
 import { Button } from './ui/button'
 
 export default function BentoGrid({
   items = [],
   loading,
 }: {
-  items?: (Wishlist | { user: string } | { share: () => void })[]
+  items?: (
+    | (Wishlist & {
+        onDelete?: (url: string) => void
+      })
+    | { user: string }
+    | { share: () => void }
+  )[]
   loading?: boolean
 }) {
   if (loading) {
@@ -129,21 +135,31 @@ export default function BentoGrid({
               </div>
             </div>
 
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-              <div className="text-white text-center p-4">
-                <h3 className="font-semibold text-xl mb-2">
-                  {item.data.title}
-                </h3>
-                <a href={item.url} target="_blank" rel="noreferrer">
-                  <Button
-                    variant="outline"
-                    className="mt-4 bg-white/10 hover:bg-white/20 border-white/20 text-white hover:text-white"
-                  >
-                    Ver producto
-                  </Button>
-                </a>
+            {'onDelete' in item ? (
+              <Button
+                variant="outline"
+                className="absolute top-1 right-4 mt-4 bg-red-500/10 hover:bg-red-500/20 border-red-500/20 text-red-500 hover:text-red-400 z-40"
+                onClick={() => item.onDelete?.(item.url)}
+              >
+                <TrashIcon className="w-5 h-5" />
+              </Button>
+            ) : (
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+                <div className="text-white text-center p-4">
+                  <h3 className="font-semibold text-xl mb-2">
+                    {item.data.title}
+                  </h3>
+                  <a href={item.url} target="_blank" rel="noreferrer">
+                    <Button
+                      variant="outline"
+                      className="mt-4 bg-white/10 hover:bg-white/20 border-white/20 text-white hover:text-white"
+                    >
+                      Ver producto
+                    </Button>
+                  </a>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )
       })}
