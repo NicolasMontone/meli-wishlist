@@ -4,6 +4,35 @@ import { sql } from '@vercel/postgres'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import BentoGrid from '@/components/bento'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+
+  return {
+    title: `Lista de deseos de ${id}`,
+    openGraph: {
+      images: [`https://meli-wishlist.vercel.app/og?name=${id}`],
+    },
+    description: `Lista de deseos de ${id}`,
+    twitter: {
+      images: [`https://meli-wishlist.vercel.app/og?name=${id}`],
+    },
+    robots: {
+      index: false,
+      follow: false,
+    },
+    metadataBase: new URL('https://meli-wishlist.vercel.app'),
+    alternates: {
+      canonical: `/${id}`,
+    },
+  }
+}
+
 export default async function Page({
   params,
 }: {
