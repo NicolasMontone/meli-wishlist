@@ -4,7 +4,6 @@ import { UsernameForm } from "@/components/username-form";
 import { CreateWishlist } from "@/components/create-wishlist";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useToast } from "../hooks/use-toast";
 
 export default function Home() {
   return (
@@ -29,7 +28,6 @@ function WishlistFlow() {
       "🎁",
       "🎁",
       "🎄",
-      "🛍️",
       "🛍️",
       "🛍️",
       "⭐",
@@ -85,9 +83,11 @@ function WishlistFlow() {
 
   // Add state for tracking clicked emojis
   const [clickedEmojis, setClickedEmojis] = useState<Set<number>>(new Set());
+
+  // Add easter egg states
   const [clickCount, setClickCount] = useState(0);
-  const [easterEggActive, setEasterEggActive] = useState(false);
   const [lastClickTime, setLastClickTime] = useState(0);
+  const [partyMode, setPartyMode] = useState(false);
 
   const handleEmojiClick = (index: number) => {
     const currentTime = Date.now();
@@ -105,41 +105,87 @@ function WishlistFlow() {
     }, 1000);
 
     // Handle rapid clicks for easter egg
-    if (currentTime - lastClickTime > 2000) {
+    if (currentTime - lastClickTime > 500) {
+      // Reset if more than 500ms between clicks
       setClickCount(1);
     } else {
       setClickCount((prev) => prev + 1);
     }
-
     setLastClickTime(currentTime);
 
+    // Trigger party mode after 5 quick clicks
     if (clickCount >= 4) {
-      setEasterEggActive(true);
+      setPartyMode(true);
       setClickCount(0);
-      setTimeout(() => setEasterEggActive(false), 3000);
+      setTimeout(() => setPartyMode(false), 3000); // Party for 3 seconds
     }
   };
 
-  const getEmojiStyle = (index: number, isTopLayer: boolean) => ({
-    fontSize: `clamp(2rem, ${Math.random() * 4 + 2}vw, ${
-      Math.random() * 8 + 4
-    }rem)`,
-    transform: "none",
-    position: "absolute",
-    top: `${Math.random() * 100}%`,
-    left: `${Math.random() * 100}%`,
-    animation: `${
-      easterEggActive
-        ? "partyMode 1s ease-in-out infinite"
+  // Add state for emoji positions
+  const [emojiPositions, setEmojiPositions] = useState<
+    Array<{
+      top: number;
+      left: number;
+      fontSize: number;
+      floatDelay: number;
+      floatDuration: number;
+      floatDistance: number;
+      emoji: string;
+    }>
+  >([]);
+
+  // Initialize positions once on mount
+  useEffect(() => {
+    const bottomLayerCount = 50;
+    const topLayerCount = 40;
+    const positions = Array(bottomLayerCount + topLayerCount)
+      .fill(null)
+      .map(() => ({
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        fontSize: Math.random() * 4 + 2,
+        floatDelay: Math.random() * -20,
+        floatDuration: Math.random() * 4 + 3,
+        floatDistance: Math.random() * 15 + 5,
+        emoji:
+          selectedEmojis[Math.floor(Math.random() * selectedEmojis.length)],
+      }));
+    setEmojiPositions(positions);
+  }, [selectedEmojis.length]);
+
+  const getEmojiStyle = (index: number, isTopLayer: boolean) => {
+    if (!emojiPositions[index]) return {};
+
+    const position = emojiPositions[index];
+    return {
+      fontSize: `clamp(2rem, ${position.fontSize}vw, ${
+        position.fontSize + 2
+      }rem)`,
+      transform: "none",
+      position: "absolute",
+      top: `${position.top}%`,
+      left: `${position.left}%`,
+      animationName: partyMode
+        ? "partyMode"
         : clickedEmojis.has(index)
-        ? "popEmoji 1s ease-in-out"
-        : `float ${
-            Math.random() * (isTopLayer ? 4 : 3) + (isTopLayer ? 3 : 2)
-          }s ease-in-out infinite`
-    }`,
-    transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-    userSelect: "none",
-  });
+        ? "popEmoji"
+        : "float",
+      animationDuration: partyMode
+        ? "0.5s"
+        : clickedEmojis.has(index)
+        ? "1s"
+        : `${position.floatDuration}s`,
+      animationTimingFunction: "ease-in-out",
+      animationIterationCount: partyMode
+        ? "infinite"
+        : clickedEmojis.has(index)
+        ? "1"
+        : "infinite",
+      animationDelay: `${position.floatDelay}s`,
+      transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      userSelect: "none",
+    };
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -167,17 +213,17 @@ function WishlistFlow() {
                 const left = col * (100 / gridCols) + (Math.random() * 8 - 4);
                 const top = row * (100 / gridRows) + (Math.random() * 8 - 4);
                 return (
+                  // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                   <span
-                    key={`bottom-${index}`}
+                    key={`bottom-${
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                      index
+                    }`}
                     className="emoji select-none cursor-pointer"
                     onClick={() => handleEmojiClick(index)}
                     style={getEmojiStyle(index, false)}
                   >
-                    {
-                      selectedEmojis[
-                        Math.floor(Math.random() * selectedEmojis.length)
-                      ]
-                    }
+                    {emojiPositions[index]?.emoji}
                   </span>
                 );
               })}
@@ -215,11 +261,7 @@ function WishlistFlow() {
                     onClick={() => handleEmojiClick(index)}
                     style={getEmojiStyle(index, true)}
                   >
-                    {
-                      selectedEmojis[
-                        Math.floor(Math.random() * selectedEmojis.length)
-                      ]
-                    }
+                    {emojiPositions[index]?.emoji}
                   </span>
                 );
               })}
@@ -232,119 +274,107 @@ function WishlistFlow() {
           <style jsx global>{`
             @keyframes float {
               0% {
-                transform: translateY(0px) rotate(0deg);
+                transform: translate(0, 0) rotate(0deg);
               }
               25% {
-                transform: translateY(-15px) rotate(-5deg);
-              }
-              75% {
-                transform: translateY(15px) rotate(5deg);
-              }
-              100% {
-                transform: translateY(0px) rotate(0deg);
-              }
-            }
-
-            @keyframes crazyWobble {
-              0% {
-                transform: rotate(0deg) scale(1);
-                filter: hue-rotate(0deg) brightness(1);
-              }
-              10% {
-                transform: rotate(-25deg) scale(1.8) translateY(-20px);
-                filter: hue-rotate(36deg) brightness(1.3);
-              }
-              20% {
-                transform: rotate(25deg) scale(2.2) translateX(20px);
-                filter: hue-rotate(72deg) brightness(1.4);
-              }
-              30% {
-                transform: rotate(-35deg) scale(2.4) translateY(20px);
-                filter: hue-rotate(108deg) brightness(1.5);
-              }
-              40% {
-                transform: rotate(35deg) scale(2.6) translateX(-20px);
-                filter: hue-rotate(144deg) brightness(1.6);
+                transform: translate(3px, -8px) rotate(2deg);
               }
               50% {
-                transform: rotate(-45deg) scale(2.8) translateY(-25px);
-                filter: hue-rotate(180deg) brightness(1.7);
+                transform: translate(-3px, -15px) rotate(-1deg);
               }
-              60% {
-                transform: rotate(45deg) scale(2.6) translateX(25px);
-                filter: hue-rotate(216deg) brightness(1.6);
-              }
-              70% {
-                transform: rotate(-35deg) scale(2.4) translateY(25px);
-                filter: hue-rotate(252deg) brightness(1.5);
-              }
-              80% {
-                transform: rotate(25deg) scale(2.2) translateX(-25px);
-                filter: hue-rotate(288deg) brightness(1.4);
-              }
-              90% {
-                transform: rotate(-25deg) scale(1.8) translateY(-20px);
-                filter: hue-rotate(324deg) brightness(1.3);
+              75% {
+                transform: translate(3px, -8px) rotate(2deg);
               }
               100% {
-                transform: rotate(0deg) scale(1);
-                filter: hue-rotate(360deg) brightness(1);
+                transform: translate(0, 0) rotate(0deg);
               }
             }
 
             .emoji {
-              transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-              transform-origin: center center;
+              cursor: pointer;
+              transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              will-change: transform, filter;
             }
 
             .emoji:hover {
+              animation: hover-bounce 1.5s ease-in-out infinite !important;
+              filter: brightness(1.5)
+                drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+              transform: scale(1.2) translateY(-10px);
               z-index: 1000;
-              filter: brightness(1.4);
-              text-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
-              animation: crazyWobble 1s ease-in-out;
+            }
+
+            @keyframes hover-bounce {
+              0% {
+                transform: scale(1.2) translateY(-10px) rotate(0deg);
+                filter: brightness(1.5)
+                  drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+              }
+              25% {
+                transform: scale(1.25) translateY(-15px) rotate(3deg);
+                filter: brightness(1.6)
+                  drop-shadow(0 0 20px rgba(255, 255, 255, 0.9));
+              }
+              50% {
+                transform: scale(1.2) translateY(-10px) rotate(0deg);
+                filter: brightness(1.5)
+                  drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+              }
+              75% {
+                transform: scale(1.25) translateY(-15px) rotate(-3deg);
+                filter: brightness(1.6)
+                  drop-shadow(0 0 20px rgba(255, 255, 255, 0.9));
+              }
+              100% {
+                transform: scale(1.2) translateY(-10px) rotate(0deg);
+                filter: brightness(1.5)
+                  drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+              }
+            }
+
+            .emoji.floating {
+              animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             }
 
             @keyframes popEmoji {
               0% {
-                transform: scale(1) rotate(0deg);
+                transform: scale(1) rotate(0deg) translateY(0);
               }
-              20% {
-                transform: scale(1.5) rotate(-15deg);
+              25% {
+                transform: scale(1.8) rotate(180deg) translateY(-30px);
               }
-              40% {
-                transform: scale(2) rotate(15deg) translateY(-20px);
+              50% {
+                transform: scale(2.2) rotate(360deg) translateY(-50px);
               }
-              60% {
-                transform: scale(2.2) rotate(-15deg) translateY(-30px);
-              }
-              80% {
-                transform: scale(1.5) rotate(15deg) translateY(-10px);
+              75% {
+                transform: scale(1.5) rotate(540deg) translateY(-20px);
               }
               100% {
-                transform: scale(1) rotate(0deg) translateY(0);
+                transform: scale(1) rotate(720deg) translateY(0);
               }
             }
 
             @keyframes partyMode {
               0% {
-                transform: scale(1) rotate(0deg);
-                filter: hue-rotate(0deg);
+                transform: scale(1) rotate(0deg) translateY(0);
+                filter: hue-rotate(0deg) brightness(1);
               }
               25% {
-                transform: scale(1.8) rotate(90deg);
+                transform: scale(1.5) rotate(90deg) translateY(-20px);
                 filter: hue-rotate(90deg) brightness(1.5);
               }
               50% {
-                transform: scale(2.2) rotate(180deg);
+                transform: scale(2) rotate(180deg) translateY(-40px);
                 filter: hue-rotate(180deg) brightness(2);
               }
               75% {
-                transform: scale(1.8) rotate(270deg);
+                transform: scale(1.5) rotate(270deg) translateY(-20px);
                 filter: hue-rotate(270deg) brightness(1.5);
               }
               100% {
-                transform: scale(1) rotate(360deg);
-                filter: hue-rotate(360deg);
+                transform: scale(1) rotate(360deg) translateY(0);
+                filter: hue-rotate(360deg) brightness(1);
               }
             }
           `}</style>

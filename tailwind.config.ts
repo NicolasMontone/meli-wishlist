@@ -9,6 +9,11 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        float: "float 4s ease-in-out infinite",
+        popEmoji: "popEmoji 1s ease-in-out",
+        partyMode: "partyMode 0.5s ease-in-out infinite",
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
