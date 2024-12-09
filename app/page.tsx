@@ -144,6 +144,7 @@ function WishlistFlow() {
   >([]);
 
   // Initialize positions once on mount
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const bottomLayerCount = 50;
     const topLayerCount = 40;
@@ -155,7 +156,7 @@ function WishlistFlow() {
       const left = Math.random() * 100;
 
       // Find an emoji that's not recently used nearby
-      let selectedEmoji;
+      let selectedEmoji: string | null = null;
       let attempts = 0;
       const maxAttempts = 10;
 
@@ -168,7 +169,7 @@ function WishlistFlow() {
         for (const [emoji, pos] of usedEmojisMap.entries()) {
           if (emoji === candidateEmoji) {
             const distance = Math.sqrt(
-              Math.pow(top - pos.top, 2) + Math.pow(left - pos.left, 2)
+              (top - pos.top) ** 2 + (left - pos.left) ** 2
             );
             if (distance < 20) {
               // Minimum distance threshold
@@ -262,7 +263,7 @@ function WishlistFlow() {
                     }`}
                     className="emoji select-none cursor-pointer"
                     onClick={() => handleEmojiClick(index)}
-                    style={getEmojiStyle(index, false)}
+                    style={getEmojiStyle(index, false) as React.CSSProperties}
                   >
                     {emojiPositions[index]?.emoji}
                   </span>
@@ -296,11 +297,15 @@ function WishlistFlow() {
                 top += Math.random() * edgeRandomness - edgeRandomness / 2;
 
                 return (
+                  // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                   <span
-                    key={`top-${index}`}
+                    key={`top-${
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                      index
+                    }`}
                     className="emoji select-none cursor-pointer"
                     onClick={() => handleEmojiClick(index)}
-                    style={getEmojiStyle(index, true)}
+                    style={getEmojiStyle(index, true) as React.CSSProperties}
                   >
                     {emojiPositions[index]?.emoji}
                   </span>
