@@ -4,17 +4,12 @@ import { fetchMercadoLibreData } from '../../utils/fetchMercadoLibreUrl'
 
 export const runtime = 'edge'
 
-// Image metadata
-export const alt = 'Mi lista de deseos'
-export const size = {
-  width: 1200,
-  height: 630,
-}
-
-export const contentType = 'image/png'
-
-// Image generation
 export async function GET(req: Request) {
+  const size = {
+    width: 1200,
+    height: 630,
+  }
+
   const url = new URL(req.url)
 
   const name = url.searchParams.get('name')
