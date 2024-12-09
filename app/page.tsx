@@ -37,26 +37,25 @@ function WishlistFlow() {
   };
 
   const handleShare = async () => {
+    const encodedUsername = `${window.location.origin}/${encodeURIComponent(
+      session?.username || ""
+    )}`;
     if (isMobile()) {
       if (navigator.share) {
         await navigator.share({
           title: "Lista de Deseos",
           text: "Lista de deseos compartida con vos",
-          url: `${window.location.origin}/${session?.username}`,
+          url: encodedUsername,
         });
       } else {
-        await navigator.clipboard.writeText(
-          `${window.location.origin}/${session?.username}`
-        );
+        await navigator.clipboard.writeText(encodedUsername);
         toast({
           title: "URL copiada",
           description: "La URL de tu lista ha sido copiada al portapapeles",
         });
       }
     } else {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}/${session?.username}`
-      );
+      await navigator.clipboard.writeText(encodedUsername);
       toast({
         title: "URL copiada",
         description: "La URL de tu lista ha sido copiada al portapapeles",
@@ -66,7 +65,7 @@ function WishlistFlow() {
 
   return (
     <AnimatePresence mode="wait">
-      <nav className="border-b bg-primary mb-8">
+      <nav className="bg-primary mb-8">
         <div className="container mx-auto p-4 flex justify-between items-center">
           <h1 className="text-xl font-semibold text-primary-foreground">
             {session?.username ? (
