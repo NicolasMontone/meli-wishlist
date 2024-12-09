@@ -20,6 +20,7 @@ function WishlistFlow() {
   } | null>(null);
 
   const emojiSets = [
+    // Gift and celebration theme
     [
       "🎁",
       "🎁",
@@ -27,40 +28,48 @@ function WishlistFlow() {
       "🎁",
       "🎁",
       "🎁",
-      "🎄",
-      "🛍️",
-      "🛍️",
-      "⭐",
+      "🎁",
+      "🎁",
+      "🎁",
+      "🎁",
+      "🎁",
+      "🎁",
+      "🎁",
+      "🎁",
+      "🎁",
       "🎀",
-      "🎀",
-      "✨",
-      "✨",
-      "🎉",
       "🎈",
+      "🎉",
+      "✨",
+      "⭐",
+      "🎮",
+      "🎨",
       "🍰",
+      "🧁",
+      "🍪",
+      "🍭",
+      "🍫",
+      "🍿",
+      "🥤",
       "🍾",
       "🥂",
-      "🌟",
-      "🌈",
-      "☀️",
-      "🌙",
-      "⭐",
-      "✨",
-      "✨",
+      "🎂",
+      "🍦",
+      "",
+      "🌺",
+      "🌸",
+      "🪄",
+      "🔮",
+      "💫",
     ],
   ];
 
   const backgroundColors = [
-    "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
-    // "linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)",
-    // "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
-    // "linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)",
-    // "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
-    // "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
-    // "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
-    // "linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)",
-    // "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
-    // "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+    // "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+    "linear-gradient(135deg, #A9C9FF 0%, #FFBBEC 100%)",
+    // "linear-gradient(135deg, #FFF886 0%, #F072B6 100%)",
+    // "linear-gradient(135deg, #FA8BFF 0%, #2BD2FF 100%)",
+    // "linear-gradient(135deg, #FBDA61 0%, #FF5ACD 100%)",
   ];
 
   const selectedEmojis =
@@ -138,18 +147,63 @@ function WishlistFlow() {
   useEffect(() => {
     const bottomLayerCount = 50;
     const topLayerCount = 40;
-    const positions = Array(bottomLayerCount + topLayerCount)
-      .fill(null)
-      .map(() => ({
-        top: Math.random() * 100,
-        left: Math.random() * 100,
+    const positions = [];
+    const usedEmojisMap = new Map(); // Track recently used emojis and their positions
+
+    for (let i = 0; i < bottomLayerCount + topLayerCount; i++) {
+      const top = Math.random() * 100;
+      const left = Math.random() * 100;
+
+      // Find an emoji that's not recently used nearby
+      let selectedEmoji;
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      while (attempts < maxAttempts) {
+        const candidateEmoji =
+          selectedEmojis[Math.floor(Math.random() * selectedEmojis.length)];
+        let tooClose = false;
+
+        // Check if this emoji is too close to same emoji
+        for (const [emoji, pos] of usedEmojisMap.entries()) {
+          if (emoji === candidateEmoji) {
+            const distance = Math.sqrt(
+              Math.pow(top - pos.top, 2) + Math.pow(left - pos.left, 2)
+            );
+            if (distance < 20) {
+              // Minimum distance threshold
+              tooClose = true;
+              break;
+            }
+          }
+        }
+
+        if (!tooClose) {
+          selectedEmoji = candidateEmoji;
+          break;
+        }
+        attempts++;
+      }
+
+      // If we couldn't find a unique emoji after max attempts, just use a random one
+      if (!selectedEmoji) {
+        selectedEmoji =
+          selectedEmojis[Math.floor(Math.random() * selectedEmojis.length)];
+      }
+
+      // Update the used emojis map
+      usedEmojisMap.set(selectedEmoji, { top, left });
+
+      positions.push({
+        top,
+        left,
         fontSize: Math.random() * 4 + 2,
         floatDelay: Math.random() * -20,
         floatDuration: Math.random() * 4 + 3,
         floatDistance: Math.random() * 15 + 5,
-        emoji:
-          selectedEmojis[Math.floor(Math.random() * selectedEmojis.length)],
-      }));
+        emoji: selectedEmoji,
+      });
+    }
     setEmojiPositions(positions);
   }, [selectedEmojis.length]);
 
@@ -161,28 +215,15 @@ function WishlistFlow() {
       fontSize: `clamp(2rem, ${position.fontSize}vw, ${
         position.fontSize + 2
       }rem)`,
-      transform: "none",
       position: "absolute",
       top: `${position.top}%`,
       left: `${position.left}%`,
-      animationName: partyMode
-        ? "partyMode"
-        : clickedEmojis.has(index)
-        ? "popEmoji"
-        : "float",
-      animationDuration: partyMode
-        ? "0.5s"
-        : clickedEmojis.has(index)
-        ? "1s"
-        : `${position.floatDuration}s`,
+      animationName: partyMode ? "partyMode" : "float",
+      animationDuration: partyMode ? "3s" : `${position.floatDuration}s`,
       animationTimingFunction: "ease-in-out",
-      animationIterationCount: partyMode
-        ? "infinite"
-        : clickedEmojis.has(index)
-        ? "1"
-        : "infinite",
+      animationIterationCount: partyMode ? "infinite" : "infinite",
       animationDelay: `${position.floatDelay}s`,
-      transition: "all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      transform: "none",
       userSelect: "none",
     };
   };
@@ -272,109 +313,72 @@ function WishlistFlow() {
             </div>
           </div>
           <style jsx global>{`
-            @keyframes float {
-              0% {
-                transform: translate(0, 0) rotate(0deg);
-              }
-              25% {
-                transform: translate(3px, -8px) rotate(2deg);
+            @keyframes sparkle {
+              0%,
+              100% {
+                opacity: 1;
+                transform: scale(1);
               }
               50% {
-                transform: translate(-3px, -15px) rotate(-1deg);
+                opacity: 0.5;
+                transform: scale(0.8);
               }
-              75% {
-                transform: translate(3px, -8px) rotate(2deg);
-              }
+            }
+
+            @keyframes float {
+              0%,
               100% {
-                transform: translate(0, 0) rotate(0deg);
+                transform: translateY(0);
               }
+              50% {
+                transform: translateY(-15px);
+              }
+            }
+
+            .background-sparkle {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              background-image: radial-gradient(
+                circle at 50% 50%,
+                rgba(255, 255, 255, 0.2) 0%,
+                transparent 10%
+              );
+              animation: sparkle 3s ease-in-out infinite;
+              pointer-events: none;
             }
 
             .emoji {
               cursor: pointer;
-              transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-              will-change: transform, filter;
+              transition: all 0.3s ease;
+              will-change: transform;
+              text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1),
+                0 4px 16px rgba(0, 0, 0, 0.1);
             }
 
             .emoji:hover {
-              animation: hover-bounce 1.5s ease-in-out infinite !important;
-              filter: brightness(1.5)
-                drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
-              transform: scale(1.2) translateY(-10px);
+              filter: brightness(1.5);
+              transform: scale(1.2) translateY(-5px);
               z-index: 1000;
-            }
-
-            @keyframes hover-bounce {
-              0% {
-                transform: scale(1.2) translateY(-10px) rotate(0deg);
-                filter: brightness(1.5)
-                  drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
-              }
-              25% {
-                transform: scale(1.25) translateY(-15px) rotate(3deg);
-                filter: brightness(1.6)
-                  drop-shadow(0 0 20px rgba(255, 255, 255, 0.9));
-              }
-              50% {
-                transform: scale(1.2) translateY(-10px) rotate(0deg);
-                filter: brightness(1.5)
-                  drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
-              }
-              75% {
-                transform: scale(1.25) translateY(-15px) rotate(-3deg);
-                filter: brightness(1.6)
-                  drop-shadow(0 0 20px rgba(255, 255, 255, 0.9));
-              }
-              100% {
-                transform: scale(1.2) translateY(-10px) rotate(0deg);
-                filter: brightness(1.5)
-                  drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
-              }
-            }
-
-            .emoji.floating {
-              animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
-            @keyframes popEmoji {
-              0% {
-                transform: scale(1) rotate(0deg) translateY(0);
-              }
-              25% {
-                transform: scale(1.8) rotate(180deg) translateY(-30px);
-              }
-              50% {
-                transform: scale(2.2) rotate(360deg) translateY(-50px);
-              }
-              75% {
-                transform: scale(1.5) rotate(540deg) translateY(-20px);
-              }
-              100% {
-                transform: scale(1) rotate(720deg) translateY(0);
-              }
+              text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
+                0 8px 24px rgba(0, 0, 0, 0.15);
             }
 
             @keyframes partyMode {
               0% {
-                transform: scale(1) rotate(0deg) translateY(0);
-                filter: hue-rotate(0deg) brightness(1);
+                transform: translate(0, 0) rotate(0deg);
               }
               25% {
-                transform: scale(1.5) rotate(90deg) translateY(-20px);
-                filter: hue-rotate(90deg) brightness(1.5);
+                transform: translate(100px, -100px) rotate(90deg);
               }
               50% {
-                transform: scale(2) rotate(180deg) translateY(-40px);
-                filter: hue-rotate(180deg) brightness(2);
+                transform: translate(-100px, -50px) rotate(180deg);
               }
               75% {
-                transform: scale(1.5) rotate(270deg) translateY(-20px);
-                filter: hue-rotate(270deg) brightness(1.5);
+                transform: translate(50px, 100px) rotate(270deg);
               }
               100% {
-                transform: scale(1) rotate(360deg) translateY(0);
-                filter: hue-rotate(360deg) brightness(1);
+                transform: translate(0, 0) rotate(360deg);
               }
             }
           `}</style>
