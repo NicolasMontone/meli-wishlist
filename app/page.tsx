@@ -1,68 +1,68 @@
-'use client'
+"use client";
 
-import { UsernameForm } from '@/components/username-form'
-import { CreateWishlist } from '@/components/create-wishlist'
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { isMobile } from '@/lib/isMobile'
-import { useToast } from '../hooks/use-toast'
+import { UsernameForm } from "@/components/username-form";
+import { CreateWishlist } from "@/components/create-wishlist";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { isMobile } from "@/lib/isMobile";
+import { useToast } from "../hooks/use-toast";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <WishlistFlow />
     </div>
-  )
+  );
 }
 
 function WishlistFlow() {
-  const { toast } = useToast()
+  const { toast } = useToast();
   const [session, setSession] = useState<{
-    username: string
-    sessionId: string
-  } | null>(null)
+    username: string;
+    sessionId: string;
+  } | null>(null);
 
   useEffect(() => {
-    const savedSession = localStorage.getItem('wishlist_session')
+    const savedSession = localStorage.getItem("wishlist_session");
     if (savedSession) {
-      setSession(JSON.parse(savedSession))
+      setSession(JSON.parse(savedSession));
     }
-  }, [])
+  }, []);
 
   const handleComplete = (username: string, sessionId: string) => {
-    const newSession = { username, sessionId }
-    setSession(newSession)
-    localStorage.setItem('wishlist_session', JSON.stringify(newSession))
-  }
+    const newSession = { username, sessionId };
+    setSession(newSession);
+    localStorage.setItem("wishlist_session", JSON.stringify(newSession));
+  };
 
   const handleShare = async () => {
     if (isMobile()) {
       if (navigator.share) {
         await navigator.share({
-          title: 'Lista de Deseos',
-          text: 'Lista de deseos compartida con vos',
+          title: "Lista de Deseos",
+          text: "Lista de deseos compartida con vos",
           url: `${window.location.origin}/${session?.username}`,
-        })
+        });
       } else {
         await navigator.clipboard.writeText(
           `${window.location.origin}/${session?.username}`
-        )
+        );
         toast({
-          title: 'URL copiada',
-          description: 'La URL de tu lista ha sido copiada al portapapeles',
-        })
+          title: "URL copiada",
+          description: "La URL de tu lista ha sido copiada al portapapeles",
+        });
       }
     } else {
       await navigator.clipboard.writeText(
         `${window.location.origin}/${session?.username}`
-      )
+      );
       toast({
-        title: 'URL copiada',
-        description: 'La URL de tu lista ha sido copiada al portapapeles',
-      })
+        title: "URL copiada",
+        description: "La URL de tu lista ha sido copiada al portapapeles",
+      });
     }
-  }
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -122,5 +122,5 @@ function WishlistFlow() {
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
