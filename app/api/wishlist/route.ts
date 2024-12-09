@@ -6,11 +6,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
 
-    if (body.username.length > 120) {
-      return Response.json({ error: 'Username too long' }, { status: 400 })
-    }
     // If only username is provided, create new user with session
     if (body.username && !body.urls) {
+      if (body.username.length > 120) {
+        return Response.json({ error: 'Username too long' }, { status: 400 })
+      }
       const sessionId = randomBytes(32).toString('base64')
       const existingUser = await sql`
 				SELECT name FROM wishlists 
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
   const query =
     await sql`SELECT data FROM wishlists WHERE session_id = ${sessionId}`
 
-  if (query.rows.length === 0) {
+  if (query.rows[0] === undefined) {
     return Response.json({ wishlist: [] })
   }
 

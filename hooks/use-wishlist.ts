@@ -8,7 +8,7 @@ export function useWishlist(sessionId: string) {
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
   useEffect(() => {
-    fetch(`/api/wishlist?sessionId=${sessionId}`)
+    fetch(`/api/wishlist?sessionId=${encodeURIComponent(sessionId)}`)
       .then((res) => res.json())
       .then((data) => {
         setWishlist(data.wishlist)

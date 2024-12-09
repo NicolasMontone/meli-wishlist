@@ -1,14 +1,13 @@
-import { fetchMercadoLibreData } from "@/utils/fetchMercadoLibreUrl";
+import { fetchMercadoLibreData } from '@/utils/fetchMercadoLibreUrl'
 
-import { sql } from "@vercel/postgres";
-import { redirect } from "next/navigation";
-import BentoGrid from "@/components/create-wishlist";
-import { Suspense } from "react";
-
+import { sql } from '@vercel/postgres'
+import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
+import BentoGrid from '@/components/bento'
 export default async function Page({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }) {
   return (
     <div className="p-8">
@@ -16,26 +15,25 @@ export default async function Page({
         <WishlistPage params={params} />
       </Suspense>
     </div>
-  );
+  )
 }
 
 async function WishlistPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id } = await params
 
-  const user = decodeURIComponent(id);
+  const user = decodeURIComponent(id)
 
-  console.log("Fetching wishlist for user:", user);
   const wishlistsUrls = await sql<{
-    data: string[];
-  }>`SELECT data FROM wishlists WHERE name = ${user}`;
+    data: string[]
+  }>`SELECT data FROM wishlists WHERE name = ${user}`
 
   if (!wishlistsUrls.rows[0]) {
-    redirect("/");
+    redirect('/')
   }
-  const urls: string[] = wishlistsUrls.rows[0].data;
+  const urls: string[] = wishlistsUrls.rows[0].data
 
   if (!urls || urls.length === 0) {
-    redirect("/");
+    redirect('/')
   }
 
   const wishlistsItems = await Promise.all(
@@ -43,9 +41,9 @@ async function WishlistPage({ params }: { params: Promise<{ id: string }> }) {
       url,
       data: await fetchMercadoLibreData(url),
     }))
-  );
+  )
 
-  const [elPrimero, ...elResto] = wishlistsItems;
+  const [elPrimero, ...elResto] = wishlistsItems
 
   return (
     <BentoGrid
@@ -57,5 +55,5 @@ async function WishlistPage({ params }: { params: Promise<{ id: string }> }) {
         ...elResto,
       ]}
     />
-  );
+  )
 }
