@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres'
-import { ImageResponse } from 'next/og'
+import { ImageResponse } from '@vercel/og'
+
 import { fetchMercadoLibreData } from '../../utils/fetchMercadoLibreUrl'
 
 export const runtime = 'edge'
