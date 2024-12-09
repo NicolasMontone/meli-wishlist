@@ -81,6 +81,10 @@ export async function GET(request: Request) {
   const query =
     await sql`SELECT data FROM wishlists WHERE session_id = ${sessionId}`
 
+  if (query.rows.length === 0) {
+    return Response.json({ wishlist: [] })
+  }
+
   const wishlistsItems = await Promise.all(
     query.rows[0].data.map(async (url: string) => ({
       url,
