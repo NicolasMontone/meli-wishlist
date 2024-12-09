@@ -134,13 +134,14 @@ export default function BentoGrid({
                 <h3 className="font-semibold text-xl mb-2">
                   {item.data.title}
                 </h3>
-                <Button
-                  variant="outline"
-                  className="mt-4 bg-white/10 hover:bg-white/20 border-white/20"
-                  onClick={() => window.open(item.url, '_blank')}
-                >
-                  Ver producto
-                </Button>
+                <a href={item.url} target="_blank" rel="noreferrer">
+                  <Button
+                    variant="outline"
+                    className="mt-4 bg-white/10 hover:bg-white/20 border-white/20 text-white hover:text-white"
+                  >
+                    Ver producto
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
