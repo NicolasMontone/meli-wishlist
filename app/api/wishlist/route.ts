@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
       if (existingUser.rows.length > 0) {
         return Response.json(
-          { message: 'Username already taken' },
+          { message: 'Nombre de usuario ya tomado, elegí otro' },
           { status: 409 }
         )
       }

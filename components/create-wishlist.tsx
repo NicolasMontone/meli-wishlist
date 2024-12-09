@@ -1,73 +1,73 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState } from "react";
+import { motion } from "framer-motion";
 
-import { useToast } from '@/hooks/use-toast'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
-import { useWishlist } from '@/hooks/use-wishlist'
-import { Label } from './ui/label'
-import { Loader, PlusIcon } from 'lucide-react'
-import { isMobile } from '@/lib/isMobile'
-import BentoGrid from './bento'
+import { useWishlist } from "@/hooks/use-wishlist";
+import { Label } from "./ui/label";
+import { Loader, PlusIcon } from "lucide-react";
+import { isMobile } from "@/lib/isMobile";
+import BentoGrid from "./bento";
 
 interface CreateWishlistProps {
-  sessionId: string
-  username: string
+  sessionId: string;
+  username: string;
 }
 
 export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
-  const { wishlist, isLoading, addUrl, deleteUrl } = useWishlist(sessionId)
-  const [isAdding, setIsAdding] = useState(false)
-  const [newUrl, setNewUrl] = useState('')
-  const { toast } = useToast()
+  const { wishlist, isLoading, addUrl, deleteUrl } = useWishlist(sessionId);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newUrl, setNewUrl] = useState("");
+  const { toast } = useToast();
 
   const handleAddUrl = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsAdding(true)
-    await addUrl(newUrl)
-    setNewUrl('')
-    setIsAdding(false)
+    e.preventDefault();
+    setIsAdding(true);
+    await addUrl(newUrl);
+    setNewUrl("");
+    setIsAdding(false);
     toast({
-      title: 'Artículo añadido',
-      description: 'El artículo ha sido añadido a tu lista de deseos.',
-    })
-  }
+      title: "Artículo añadido",
+      description: "El artículo ha sido añadido a tu lista de deseos.",
+    });
+  };
 
   const handleShare = async () => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
     const encodedUsername = `${window.location.origin}/${encodeURIComponent(
-      username || ''
-    )}`
+      username || ""
+    )}`;
     if (isMobile()) {
       if (navigator.share) {
         await navigator.share({
-          title: 'Lista de Deseos',
-          text: 'Lista de deseos compartida con vos',
+          title: "Lista de Deseos",
+          text: "Lista de deseos compartida con vos",
           url: encodedUsername,
-        })
+        });
       } else {
-        await navigator.clipboard.writeText(encodedUsername)
+        await navigator.clipboard.writeText(encodedUsername);
         toast({
-          title: 'URL copiada',
-          description: 'La URL de tu lista ha sido copiada al portapapeles',
-        })
+          title: "URL copiada",
+          description: "La URL de tu lista ha sido copiada al portapapeles",
+        });
       }
     } else {
-      await navigator.clipboard.writeText(encodedUsername)
+      await navigator.clipboard.writeText(encodedUsername);
       toast({
-        title: 'URL copiada',
-        description: 'La URL de tu lista ha sido copiada al portapapeles',
-      })
+        title: "URL copiada",
+        description: "La URL de tu lista ha sido copiada al portapapeles",
+      });
     }
-  }
+  };
 
-  const isFirstLoading = isLoading && wishlist.length === 0 && !isAdding
-  const isEmpty = wishlist?.length === 0 && !isFirstLoading
+  const isFirstLoading = isLoading && wishlist.length === 0 && !isAdding;
+  const isEmpty = wishlist?.length === 0 && !isFirstLoading;
 
-  const [firstItem, ...restItems] = wishlist
+  const [firstItem, ...restItems] = wishlist;
 
   const items = firstItem
     ? [
@@ -78,9 +78,9 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
           onDelete: (url: string) => deleteUrl(url),
         })),
       ]
-    : []
+    : [];
 
-  console.log(items)
+  console.log(items);
 
   return (
     <motion.div
@@ -106,7 +106,7 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
               disabled={isLoading || isAdding}
             >
               <span className="flex items-center gap-3">
-                Añadir{' '}
+                Añadir{" "}
                 {isLoading ? (
                   <Loader className="animate-spin w-4 h-4" />
                 ) : (
@@ -129,5 +129,5 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
         <BentoGrid items={items} />
       )}
     </motion.div>
-  )
+  );
 }
