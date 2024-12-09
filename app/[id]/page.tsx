@@ -16,11 +16,11 @@ export async function generateMetadata({
   return {
     title: `Lista de deseos de ${id}`,
     openGraph: {
-      images: [`/og?name=${id}`],
+      images: [`https://meli-wishlist.vercel.app/og?name=${id}`],
     },
     description: `Lista de deseos de ${id}`,
     twitter: {
-      images: [`/og?name=${id}`],
+      images: [`https://meli-wishlist.vercel.app/og?name=${id}`],
     },
     robots: {
       index: false,
