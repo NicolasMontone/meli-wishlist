@@ -6,6 +6,9 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
 
+    if (body.username.length > 120) {
+      return Response.json({ error: 'Username too long' }, { status: 400 })
+    }
     // If only username is provided, create new user with session
     if (body.username && !body.urls) {
       const sessionId = randomBytes(32).toString('base64')
