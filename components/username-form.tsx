@@ -100,7 +100,7 @@ export function UsernameForm({ onComplete }: UsernameFormProps) {
             <motion.div variants={itemVariants}>
               <div className="flex items-center gap-1 border rounded pl-2 bg-gray-100">
                 <span className="text-muted-foreground text-md">
-                  {window.location.origin}/
+                  {typeof window !== "undefined" ? window.location.origin : ""}/
                 </span>
                 <Input
                   value={username}
