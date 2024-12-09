@@ -4,7 +4,6 @@ import { UsernameForm } from '@/components/username-form'
 import { CreateWishlist } from '@/components/create-wishlist'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
 import { isMobile } from '@/lib/isMobile'
 import { useToast } from '../hooks/use-toast'
 
