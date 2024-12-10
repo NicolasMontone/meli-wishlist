@@ -130,7 +130,13 @@ export default function BentoGrid({
 
               <div className="flex justify-end">
                 <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-md">
-                  ${item.data.price}
+                  $
+                  {item.data.price
+                    ? Intl.NumberFormat('es-ES', {
+                        style: 'currency',
+                        currency: 'ARS',
+                      }).format(Number(item.data.price))
+                    : 'No disponible'}
                 </span>
               </div>
             </div>
