@@ -20,7 +20,7 @@ export default function BentoGrid({
 }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[...Array(6)].map((_, index) => (
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
@@ -43,7 +43,7 @@ export default function BentoGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {items?.map((item, index) => {
         const isFeatured = index === 0
 
@@ -119,7 +119,7 @@ export default function BentoGrid({
               <img
                 src={item.data.imageSrc || ''}
                 alt={item.data.title || ''}
-                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
             </div>
 

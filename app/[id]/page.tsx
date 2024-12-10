@@ -39,7 +39,7 @@ export default async function Page({
   params: Promise<{ id: string }>
 }) {
   return (
-    <div className="p-8">
+    <div className="p-4">
       <Suspense fallback={<BentoGrid items={[]} loading />}>
         <WishlistPage params={params} />
       </Suspense>
