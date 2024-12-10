@@ -1,6 +1,4 @@
-import { sql } from '@vercel/postgres'
 import { ImageResponse } from 'next/og'
-import { fetchMercadoLibreData } from '../../utils/fetchMercadoLibreUrl'
 
 export const runtime = 'edge'
 
@@ -14,111 +12,62 @@ export async function GET(req: Request) {
   const name = url.searchParams.get('name')
 
   try {
-    const wishlistsUrls = await sql<{
-      data: string[]
-    }>`SELECT data FROM wishlists WHERE name = ${name}`
-
-    if (
-      !wishlistsUrls.rows[0] ||
-      !wishlistsUrls.rows[0].data ||
-      wishlistsUrls.rows[0].data.length === 0
-    ) {
-      return new ImageResponse(
-        (
-          <div
-            style={{
-              fontSize: 128,
-              background: 'white',
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {name || 'No wishlist found'}
-          </div>
-        ),
-        { ...size }
-      )
-    }
-
-    const urls: string[] = wishlistsUrls.rows[0].data
-    const wishlistsItems = await Promise.all(
-      urls.map(async (url: string) => {
-        try {
-          const data = await fetchMercadoLibreData(url)
-          return { url, data }
-        } catch (error) {
-          console.error(`Failed to fetch data for URL: ${url}`, error)
-          return { url, data: null }
-        }
-      })
-    )
-
-    const validItems = wishlistsItems.filter((item) => item.data?.imageSrc)
-
     return new ImageResponse(
       (
         <div
           style={{
-            background: 'white',
-            width: '100%',
             height: '100%',
+            width: '100%',
             display: 'flex',
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
             flexDirection: 'column',
-            position: 'relative',
+            flexWrap: 'nowrap',
+            backgroundColor: 'white',
+            backgroundImage:
+              'radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%), radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)',
+            backgroundSize: '100px 100px',
           }}
         >
           <div
             style={{
               display: 'flex',
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {validItems.map(({ data }, index) => {
-              if (!data?.imageSrc) return null
-              return (
-                <img
-                  key={`${data.imageSrc}-${index}`}
-                  src={data.imageSrc}
-                  style={{
-                    width: `${100 / validItems.length}%`,
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                  alt={data.title || ''}
-                />
-              )
-            })}
+            {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100"
+              height="100"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-gift"
+            >
+              <rect x="3" y="8" width="18" height="4" rx="1" />
+              <path d="M12 8v13" />
+              <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+              <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+            </svg>
           </div>
           <div
             style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              background:
-                'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%)',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: 96,
-              fontWeight: 'bold',
-              textAlign: 'center',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+              fontSize: 40,
+              fontStyle: 'normal',
+              color: 'black',
+              marginTop: 30,
+              lineHeight: 1.8,
+              whiteSpace: 'pre-wrap',
             }}
           >
-            {name}
+            <b>Lista de deseos de {name}</b>
           </div>
         </div>
       ),
