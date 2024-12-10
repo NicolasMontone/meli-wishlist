@@ -129,11 +129,13 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
           No hay artículos en tu lista de deseos
         </p>
       )}
-      {isFirstLoading ? (
-        <BentoGrid loading items={[]} />
-      ) : (
-        <BentoGrid items={items} />
-      )}
+      <div className="mt-8">
+        {isFirstLoading ? (
+          <BentoGrid loading items={[]} />
+        ) : (
+          <BentoGrid items={items} />
+        )}
+      </div>
     </motion.div>
   )
 }
