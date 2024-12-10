@@ -4,9 +4,9 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from "@vercel/analytics/react";
 export const metadata: Metadata = {
-  title: "Regal.ar",
+  title: "Obsequi.ar - Lista de deseos",
   description: "Compartí tu lista de deseos con tus amigos y familiares",
 };
 
