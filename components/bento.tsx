@@ -119,7 +119,7 @@ export default function BentoGrid({
               <img
                 src={item.data.imageSrc || ''}
                 alt={item.data.title || ''}
-                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
             </div>
 
