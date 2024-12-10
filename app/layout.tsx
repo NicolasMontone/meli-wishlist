@@ -4,6 +4,7 @@ import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 
+import { Analytics } from '@vercel/analytics/react'
 export const metadata: Metadata = {
   title: 'Mercado Libre Wishlist',
   description: 'Compartí tu lista de deseos con tus amigos y familiares',
@@ -25,6 +26,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <TailwindIndicator />
+        <Analytics />
       </body>
     </html>
   )
