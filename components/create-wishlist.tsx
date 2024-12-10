@@ -88,8 +88,6 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
       ]
     : []
 
-  console.log(items)
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
