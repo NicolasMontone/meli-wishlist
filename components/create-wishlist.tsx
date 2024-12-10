@@ -99,7 +99,7 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
       <form onSubmit={handleAddUrl} className="mt-4">
         <div className="flex flex-col gap-2">
           <Label htmlFor="url" className="text-md text-muted-foreground">
-            URL del artículo
+            Pega la URL del artículo
           </Label>
           <div className="flex gap-2">
             <Input
