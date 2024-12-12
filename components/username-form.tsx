@@ -59,8 +59,8 @@ export function UsernameForm({ onComplete }: UsernameFormProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: username.trim() }),
-      })
+        body: JSON.stringify({ username: username.trim().toLowerCase() }),
+      });
 
       const data = await response.json()
 
