@@ -172,8 +172,9 @@ export async function GET(req: Request) {
         const response = await fetch(imageUrl)
         const arrayBuffer = await response.arrayBuffer()
         const processedBuffer = await sharp(Buffer.from(arrayBuffer))
-          .resize(100, 100, { fit: 'cover', background: 'white' })
+          .resize(1000, 1000, { fit: 'cover', background: 'white' })
           .jpeg({ quality: 100 })
+          .flatten({ background: 'white' })
           .toBuffer()
         return `data:image/jpeg;base64,${processedBuffer.toString('base64')}`
       } catch (error) {
@@ -194,62 +195,34 @@ export async function GET(req: Request) {
             textAlign: 'center',
             alignItems: 'center',
             justifyContent: 'center',
-            flexDirection: 'column',
-            flexWrap: 'nowrap',
+            flexDirection: 'row',
             backgroundColor: 'white',
-            backgroundImage:
-              'radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%), radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)',
-            backgroundSize: '100px 100px',
+            flexWrap: 'nowrap',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              fontSize: 40,
-              fontStyle: 'normal',
-              color: 'black',
-              marginTop: 30,
-              lineHeight: 1.8,
-              whiteSpace: 'pre-wrap',
-            }}
-          >
-            <img
-              src={
-                'data:image/jpeg;base64,/9j/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCABkAGQDASIAAhEBAxEB/8QAGwABAAMBAQEBAAAAAAAAAAAAAAEEBQMCBgf/xAA2EAABAwIDBAgEBQUAAAAAAAABAAIDBBEFEiETMUFhMlFScYGRocEGFCKxM0KS0eFDYmNzgv/EABoBAQADAQEBAAAAAAAAAAAAAAACAwQBBQb/xAAnEQACAgIBAwMEAwAAAAAAAAAAAQIDBBESBSExEyJRQWFxsSMy4f/aAAwDAQACEQMRAD8A/ZkREB5a8PBsdxIXpU8OfnjmP+V3rqrihXPnFSJTjxloIiKZEKL2UqnXzbI02ts07Qe5RnJRW2SjHk9IuIiKREIiIAiIgC41EzYozc/URZo4kr1LC2ZuVxcObXFp9Fk1tJNRNM0cjpI/zE9IDmeIWPLusqrcoR2XVQjJ6bOmG1DYqiSF5sHm7SeJWsvm9aiRkUYzOduWtS4e6GzpamZ57IeQ0fuvP6VkW2Q4uPZfUuyK4p8m9MvIoUr3DGFkY4+z6YDg/MtdYuKgy1jQNzMo87rD1CfChv8ABpxl/ImbINwCOKlcaV2elid/aLrstsXtJmdrT0ERF04EREAXmRgkjcx25wIK9IjWwYfw/HeWd7t8YEf3v7LcVLDaf5c1VxbPUOcO7RWy9rek4DvKyYdXo0KH5/ZfkS52No9IuXzEA/rR/qC8PrqZguZmnk3X7LQ7IRW2ypQk/CLCxZpM0738HPuO4aD7LrPiL5wWRNdEw73u6RHIcO8qs9wJ0FgBYDqC+e6pmwnFV1vZrpqce7NSgcNk6Pixx8jqFaWC2pmgLXxWLm6WO5w6j+6uxY3SuFps0DuIcNPMLfh9QpsgoyemvkhZRPfKK2aKKszEKOTo1UR/7C7CaJwuJGHucF6anF+GZ3GS8o9ooBB3FFIiSiIgIUOjY/pMae8L0ucz9nBI/stJ9Fx613Ore+xykw6jl6dNGeYbY+iqPwdsRz0pAPZfx8Qr9LLtqSGU73sa7zC6rPZj03R90S1W2QetmHk+sxua6KQaljvuOsLk9pYbFbVXStqosvRe3Vj+yVjZ9rDmIs5pIcOojevmOo4ax5JrwzVXZzWzwHE8bDrURwzVxtTR5mXsZX6N8OtTQ03z9WY332MQu8D8x4BfRNaGtDWgADQAcFb0/pqvj6tn9f2dtu9J6XkyIvh2m31LjKeofSP3V2HCqCD8OjhHPICfVW0X0deNTUtQikZJX2y8yZAAAsAAOSKUWgpCIiAKnismzwyc8SzKPHT3XWd1U0XhjjfyLyPZZNU+pqnhkwDA03yc1gzclU1Ps9vx2NFNe5KTfZGhhDs2GQt4sGQ+BsrqwmOqaR94HNIcdY3DeeXNadPLWSAGWnjjH+y58rKGDlK2pRae12fY7dX7nJPsy0sCpbs6+sYNxAkHiNfULeWNiwEdaXnc+nI8j/Kh1aHLH38P/BjP3tfJ1+H2WoXy21kkJvyGnstVU8Ji2WFUzTvyBx8dfdXFtxYenRCP2RXc+Vkn9wiItBUEREAREQBUsTYBSmYD6oiDflfUK6uVQza08kfaaR6Kq6tWVyg/qicHqSZUwxgeHzuFzmLWnqA/laCrYezJQxAjUtzHx191ZUMWtV0xj9jtr3NhZWPRl0EbhvN2fqH8LVVesh28bG9mRrvIruRX6tTh8naZcJpnZjQxjWDc0ABekRXlQREQBERAEREAREQEAAAAaAKURAEREAREQBERAEREB//Z'
-              }
-              style={{ objectFit: 'contain' }}
-              width="32"
-              height="32"
-              alt="Imagen 1"
-            />
-            <b
+          {previewImageBase64.map((image, index) => (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: no need
+              key={index}
               style={{
-                background:
-                  'linear-gradient(135deg, rgb(169, 201, 255) 0%, rgb(255, 187, 236) 100%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                borderRadius: '10px',
+                padding: '8px',
+                backgroundColor: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
               }}
             >
-              Lista de deseos de {name}
-            </b>
-          </div>
-          <div style={{ display: 'flex', gap: '4px' }}>
-            {previewImageBase64.map((image, index) => (
               <img
-                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                key={index}
                 style={{ objectFit: 'contain' }}
-                width="100px"
-                height="100px"
+                width="300px"
+                height="300px"
                 src={image || ''}
                 alt={`Imagen ${index + 1}`}
-              />
-            ))}
-          </div>
+              />{' '}
+            </div>
+          ))}
         </div>
       ),
       {

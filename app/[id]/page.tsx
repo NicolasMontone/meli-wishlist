@@ -16,17 +16,17 @@ export async function generateMetadata({
   return {
     title: `Lista de deseos de ${id}`,
     openGraph: {
-      images: [`https://meli-wishlist.vercel.app/og?name=${id}`],
+      images: [`https://obsequi.ar/og?name=${id}`],
     },
-    description: `Lista de deseos de ${id}`,
+    description: 'Para que sepas que regalarme para Navidad ',
     twitter: {
-      images: [`https://meli-wishlist.vercel.app/og?name=${id}`],
+      images: [`https://obsequi.ar/og?name=${id}`],
     },
     robots: {
       index: false,
       follow: false,
     },
-    metadataBase: new URL('https://meli-wishlist.vercel.app'),
+    metadataBase: new URL('https://obsequi.ar'),
     alternates: {
       canonical: `/${id}`,
     },
