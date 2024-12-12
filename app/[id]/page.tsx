@@ -50,7 +50,7 @@ export default async function Page({
 async function WishlistPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  const user = decodeURIComponent(id)
+  const user = decodeURIComponent(id).toLowerCase();
 
   const wishlistsUrls = await sql<{
     data: string[]
