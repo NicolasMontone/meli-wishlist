@@ -29,6 +29,7 @@ export function CreateWishlist({ sessionId, username }: CreateWishlistProps) {
     e.preventDefault()
     setIsAdding(true)
     if (!isMeliUrl(newUrl)) {
+      setIsAdding(false)
       toast({
         title: 'URL inválida',
         description: 'La URL no es válida',
