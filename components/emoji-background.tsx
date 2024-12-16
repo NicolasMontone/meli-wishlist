@@ -182,9 +182,9 @@ export function EmojiBackground() {
         ))}
       </div>
 
-      <div className="absolute h-screen inset-0 backdrop-blur-2xl" />
+      <div className="fixed h-screen inset-0 backdrop-blur-2xl" />
 
-      <div className="absolute h-screen inset-0 flex flex-wrap">
+      <div className="fixed h-screen inset-0 flex flex-wrap">
         {Array.from({ length: 20 }).map((_, index) => (
           // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
           <span
@@ -200,8 +200,8 @@ export function EmojiBackground() {
           </span>
         ))}
       </div>
-      <div className="absolute h-screen inset-0 backdrop-blur-md" />
-      <div className="absolute h-screen inset-0 flex flex-wrap">
+      <div className="fixed h-screen inset-0 backdrop-blur-md" />
+      <div className="fixed h-screen inset-0 flex flex-wrap">
         {Array.from({ length: 20 }).map((_, index) => (
           // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
           <span
