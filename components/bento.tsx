@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import type { Wishlist } from '../types'
-import { PlusIcon, TrashIcon } from 'lucide-react'
-import { Button } from './ui/button'
+import Link from "next/link";
+import type { Wishlist } from "../types";
+import { PlusIcon, TrashIcon } from "lucide-react";
+import { Button } from "./ui/button";
 
 export default function BentoGrid({
   items = [],
@@ -11,22 +11,22 @@ export default function BentoGrid({
 }: {
   items?: (
     | (Wishlist & {
-        onDelete?: (url: string) => void
+        onDelete?: (url: string) => void;
       })
     | { user: string }
     | { share: () => void }
-  )[]
-  loading?: boolean
+  )[];
+  loading?: boolean;
 }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1300px] mx-auto">
         {[...Array(6)].map((_, index) => (
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             key={index}
             className={`relative rounded-xl overflow-hidden ${
-              index === 0 ? 'md:col-span-2 md:row-span-2' : ''
+              index === 0 ? "md:col-span-2 md:row-span-2" : ""
             } border border-1 border-gray-300 shadow animate-pulse `}
           >
             <div className="relative aspect-[4/3] w-full h-full bg-gray-200" />
@@ -39,17 +39,17 @@ export default function BentoGrid({
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1300px] mx-auto">
       {items?.map((item, index) => {
-        const isFeatured = index === 0
+        const isFeatured = index === 0;
 
-        if (!item) return null
+        if (!item) return null;
 
-        if ('share' in item) {
+        if ("share" in item) {
           return (
             <div
               key="share"
@@ -68,18 +68,18 @@ export default function BentoGrid({
                 Compartir lista
               </Button>
             </div>
-          )
+          );
         }
 
-        if ('user' in item) {
+        if ("user" in item) {
           return (
             <div
               key="user"
-              className="flex flex-col aspect-[4/3] bg-[#FFFFCC] p-8 gap-8 border-1 flex-1 border border-yellow-200 rounded-xl shadow"
+              className="flex z-20 flex-col aspect-[4/3] bg-[#FFFFCC] p-8 gap-8 border-1 flex-1 border border-yellow-200 rounded-xl shadow"
             >
               <div className="text-[72px]">🎁</div>
               <h1 className="text-4xl font-bold text-gray-900">
-                Wishlist de{' '}
+                Wishlist de{" "}
                 <span className="relative">
                   {item.user}
                   <svg
@@ -103,22 +103,22 @@ export default function BentoGrid({
                 </Button>
               </Link>
             </div>
-          )
+          );
         }
 
         return (
           <div
             key={item.url}
-            className={`relative rounded-xl overflow-hidden group ${
-              isFeatured ? 'md:col-span-2 md:row-span-2' : ''
-            } border border-1 border-gray-300 shadow`}
+            className={`relative rounded-xl overflow-hidden group bg-white ${
+              isFeatured ? "md:col-span-2 md:row-span-2" : ""
+            } shadow`}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent z-10" />
 
             <div className="relative aspect-[4/3] w-full h-full">
               <img
-                src={item.data.imageSrc || ''}
-                alt={item.data.title || ''}
+                src={item.data.imageSrc || ""}
+                alt={item.data.title || ""}
                 className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
             </div>
@@ -132,16 +132,16 @@ export default function BentoGrid({
                 <span className="bg-white text-black px-3 py-1 rounded-full font-semibold shadow-md">
                   $
                   {item.data.price
-                    ? Intl.NumberFormat('es-ES', {
-                        style: 'currency',
-                        currency: 'ARS',
+                    ? Intl.NumberFormat("es-ES", {
+                        style: "currency",
+                        currency: "ARS",
                       }).format(Number(item.data.price))
-                    : 'No disponible'}
+                    : "No disponible"}
                 </span>
               </div>
             </div>
 
-            {'onDelete' in item ? (
+            {"onDelete" in item ? (
               <Button
                 variant="outline"
                 className="absolute top-1 right-4 mt-4 bg-red-500/10 hover:bg-red-500/20 border-red-500/20 text-red-500 hover:text-red-400 z-40"
@@ -167,8 +167,8 @@ export default function BentoGrid({
               </div>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
